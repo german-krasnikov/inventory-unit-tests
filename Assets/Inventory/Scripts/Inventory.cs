@@ -24,6 +24,8 @@ namespace Inventories
 
         public Inventory(in int width, in int height)
         {
+            if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width));
+            if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height));
             _grid = new Item[width, height];
             _items = new List<Item>();
         }
