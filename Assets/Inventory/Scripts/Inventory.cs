@@ -32,25 +32,37 @@ namespace Inventories
             in int width,
             in int height,
             params KeyValuePair<Item, Vector2Int>[] items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+        }
 
         public Inventory(
             in int width,
             in int height,
             params Item[] items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+        }
 
         public Inventory(
             in int width,
             in int height,
             in IEnumerable<KeyValuePair<Item, Vector2Int>> items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+        }
 
         public Inventory(
             in int width,
             in int height,
             in IEnumerable<Item> items
-        ) : this(width, height) => throw new NotImplementedException();
+        ) : this(width, height)
+        {
+            if (items == null) throw new ArgumentNullException(nameof(items));
+        }
 
         /// <summary>
         /// Checks for adding an item on a specified position
