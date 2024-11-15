@@ -228,8 +228,17 @@ namespace Inventories
 
         public bool TryGetItem(in int x, in int y, out Item item)
         {
-            item = GetItem(x, y);
-            return item != null;
+            try
+            {
+                item = GetItem(x, y);
+            }
+            catch (NullReferenceException)
+            {
+                item = null;
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
