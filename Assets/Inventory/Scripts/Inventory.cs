@@ -97,6 +97,7 @@ namespace Inventories
         public bool CanAddItem(in Item item, in int posX, in int posY)
         {
             if (item == null || Contains(item) || !CheckGridRange(posX, posY)) return false;
+            CheckItemSize(item);
 
             for (var x = posX; x < posX + item.Size.x; x++)
             {
