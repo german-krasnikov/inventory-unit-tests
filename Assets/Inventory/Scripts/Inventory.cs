@@ -79,6 +79,11 @@ namespace Inventories
         ) : this(width, height)
         {
             if (items == null) throw new ArgumentNullException(nameof(items));
+
+            foreach (var item in items)
+            {
+                AddItem(item);
+            }
         }
 
         /// <summary>
@@ -91,11 +96,11 @@ namespace Inventories
 
         public bool CanAddItem(in Item item, in int posX, in int posY)
         {
-            if (item == null || Contains(item) || !posY.IsInRange(0, Height - 1) || !posX.IsInRange(0, Width - 1)) return false;
+            if (item == null || Contains(item) || !CheckGridRange(posX, posY)) return false;
 
-            for (int x = posX; x < posX + item.Size.x; x++)
+            for (var x = posX; x < posX + item.Size.x; x++)
             {
-                for (int y = posY; y < posY + item.Size.y; y++)
+                for (var y = posY; y < posY + item.Size.y; y++)
                 {
                     if (!IsFree(x, y)) return false;
                 }
@@ -109,11 +114,12 @@ namespace Inventories
         /// </summary>
         public bool AddItem(in Item item, in Vector2Int position) => AddItem(item, position.x, position.y);
 
-        public bool AddItem(in Item item, in int posX, in int posY)
+        public bool AddItem(Item item, in int posX, in int posY)
         {
             if (!CanAddItem(item, posX, posY)) return false;
             if (posX + item.Size.x > Width || posY + item.Size.y > Height) return false;
-            _grid[posX, posY] = item;
+
+            IterateByItemPositions(item, posX, posY, (x, y) => _grid[x, y] = item);
             _items.Add(item, new Vector2Int(posX, posY));
             return true;
         }
@@ -122,19 +128,63 @@ namespace Inventories
         /// Checks for adding an item on a free position
         /// </summary>
         public bool CanAddItem(in Item item)
-            => throw new NotImplementedException();
+        {
+            if (Contains(item)) return false;
+            return AddItem(item);
+        }
 
         /// <summary>
         /// Adds an item on a free position
         /// </summary>
         public bool AddItem(in Item item)
-            => throw new NotImplementedException();
+        {
+            if (FindFreePosition(item.Size, out var freePosition))
+            {
+                return AddItem(item, freePosition);
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Returns a free position for a specified item
         /// </summary>
-        public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
-            => throw new NotImplementedException();
+        public bool FindFreePosition(Vector2Int size, out Vector2Int freePosition)
+        {
+            if (size.x > Width || size.y > Height)
+            {
+                freePosition = default;
+                return false;
+            }
+
+            for (var y = 0; y < Height; y++)
+            {
+                for (var x = 0; x < Width; x++)
+                {
+                    if (IsFreeSection(x, y, size))
+                    {
+                        freePosition = new Vector2Int(x, y);
+                        return true;
+                    }
+                }
+            }
+
+            freePosition = default;
+            return false;
+        }
+
+        private bool IsFreeSection(int posX, int posY, Vector2Int size)
+        {
+            var result = true;
+            IterateByRangePositions(posX, posY, size.x, size.y, (x, y) =>
+            {
+                if (!IsFree(x, y))
+                {
+                    result = false;
+                }
+            });
+            return result;
+        }
 
         /// <summary>
         /// Checks if a specified item exists
@@ -162,14 +212,13 @@ namespace Inventories
 
         public bool IsFree(in int posX, in int posY)
         {
-            for (int x = 0; x < Width; x++)
+            for (var x = 0; x < Width; x++)
             {
-                for (int y = 0; y < Height; y++)
+                for (var y = 0; y < Height; y++)
                 {
                     var item = _grid[x, y];
                     if (item == null) continue;
                     if (x == posX && y == posY) return false;
-                    if (posX.IsInRange(x, x + item.Size.x - 1) && posY.IsInRange(y, y + item.Size.y - 1)) return false;
                 }
             }
 
@@ -184,7 +233,8 @@ namespace Inventories
             if (!Contains(item)) return false;
 
             var position = _items[item];
-            _grid[position.x, position.y] = null;
+
+            IterateByItemPositions(item, position.x, position.y, (x, y) => _grid[x, y] = null);
             _items.Remove(item);
             OnRemoved(item, position);
             return true;
@@ -211,7 +261,7 @@ namespace Inventories
 
         public Item GetItem(in int posX, in int posY)
         {
-            if (!posY.IsInRange(0, Height - 1) || !posX.IsInRange(0, Width - 1)) throw new IndexOutOfRangeException();
+            if (!CheckGridRange(posX, posY)) throw new IndexOutOfRangeException();
 
             foreach (var pair in _items)
             {
@@ -256,13 +306,7 @@ namespace Inventories
             var position = _items[item];
             var result = new List<Vector2Int>();
 
-            for (int x = position.x; x < position.x + item.Size.x; x++)
-            {
-                for (int y = position.y; y < position.y + item.Size.y; y++)
-                {
-                    result.Add(new Vector2Int(x, y));
-                }
-            }
+            IterateByItemPositions(item, position.x, position.y, (x, y) => result.Add(new Vector2Int(x, y)));
 
             return result.ToArray();
         }
@@ -286,15 +330,7 @@ namespace Inventories
         {
             if (_items.Count == 0) return;
             _items.Clear();
-
-            for (int x = 0; x < Width; x++)
-            {
-                for (int y = 0; y < Height; y++)
-                {
-                    _grid[x, y] = null;
-                }
-            }
-
+            IterateByGridPositions((x, y) => _grid[x, y] = null);
             OnCleared?.Invoke();
         }
 
@@ -326,5 +362,35 @@ namespace Inventories
 
         IEnumerator IEnumerable.GetEnumerator()
             => _items.Keys.GetEnumerator();
+
+        private void IterateByItemPositions(Item item, int posX, int posY, Action<int, int> callback)
+            => IterateByRangePositions(posX, posY, item.Size.x, item.Size.y, callback);
+
+        private void IterateByGridPositions(Action<int, int> callback)
+            => IterateByRangePositions(0, 0, Width, Height, callback);
+
+        private void IterateByRangePositions(int posX, int posY, int width, int height, Action<int, int> callback)
+        {
+            for (var x = posX; x < posX + width; x++)
+            {
+                for (var y = posY; y < posY + height; y++)
+                {
+                    callback(x, y);
+                }
+            }
+        }
+
+        private void BreakableIterateByRangePositions(int posX, int posY, int width, int height, Func<int, int, bool> callback)
+        {
+            for (var x = posX; x < posX + width; x++)
+            {
+                for (var y = posY; y < posY + height; y++)
+                {
+                    if (!callback(x, y)) return;
+                }
+            }
+        }
+
+        private bool CheckGridRange(int x, int y) => x.IsInRange(0, Width - 1) && y.IsInRange(0, Height - 1);
     }
 }
