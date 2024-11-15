@@ -117,6 +117,7 @@ namespace Inventories
         public bool AddItem(Item item, in int posX, in int posY)
         {
             if (!CanAddItem(item, posX, posY)) return false;
+            CheckItemSize(item);
             if (posX + item.Size.x > Width || posY + item.Size.y > Height) return false;
 
             IterateByItemPositions(item, posX, posY, (x, y) => _grid[x, y] = item);
@@ -141,7 +142,7 @@ namespace Inventories
         public bool AddItem(in Item item)
         {
             if (item == null) return false;
-            if (item.Size.x <= 0 || item.Size.y <= 0) throw new ArgumentOutOfRangeException(nameof(item.Size));
+            CheckItemSize(item);
 
             if (FindFreePosition(item.Size, out var freePosition))
             {
@@ -399,5 +400,10 @@ namespace Inventories
         }
 
         private bool CheckGridRange(int x, int y) => x.IsInRange(0, Width - 1) && y.IsInRange(0, Height - 1);
+
+        private void CheckItemSize(Item item)
+        {
+            if (item.Size.x <= 0 || item.Size.y <= 0) throw new ArgumentOutOfRangeException(nameof(item.Size));
+        }
     }
 }
