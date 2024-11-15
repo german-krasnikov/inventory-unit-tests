@@ -279,6 +279,7 @@ namespace Inventories
         /// </summary>
         public void Clear()
         {
+            if (_items.Count == 0) return;
             _items.Clear();
 
             for (int x = 0; x < Width; x++)
