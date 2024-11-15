@@ -208,9 +208,16 @@ namespace Inventories
         public Item GetItem(in Vector2Int position)
             => GetItem(position.x, position.y);
 
-        public Item GetItem(in int x, in int y)
+        public Item GetItem(in int posX, in int posY)
         {
-            return _grid[x, y];
+            foreach (var pair in _items)
+            {
+                var item = pair.Key;
+                var pos = pair.Value;
+                if (posX.IsInRange(pos.x, pos.x + item.Size.x) && posY.IsInRange(pos.y, pos.y + item.Size.y)) return item;
+            }
+
+            return null;
         }
 
         public bool TryGetItem(in Vector2Int position, out Item item)
@@ -269,6 +276,7 @@ namespace Inventories
                     _grid[x, y] = null;
                 }
             }
+
             OnCleared?.Invoke();
         }
 
