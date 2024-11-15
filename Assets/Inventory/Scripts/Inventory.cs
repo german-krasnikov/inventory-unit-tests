@@ -138,6 +138,8 @@ namespace Inventories
         /// </summary>
         public bool AddItem(in Item item)
         {
+            if (item == null) return false;
+
             if (FindFreePosition(item.Size, out var freePosition))
             {
                 return AddItem(item, freePosition);
