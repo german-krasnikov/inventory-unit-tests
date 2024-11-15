@@ -218,7 +218,7 @@ namespace Inventories
                 if (posX.IsInRange(pos.x, pos.x + item.Size.x) && posY.IsInRange(pos.y, pos.y + item.Size.y)) return item;
             }
 
-            return null;
+            throw new NullReferenceException();
         }
 
         public bool TryGetItem(in Vector2Int position, out Item item)
