@@ -269,6 +269,7 @@ namespace Inventories
                     _grid[x, y] = null;
                 }
             }
+            OnCleared?.Invoke();
         }
 
         /// <summary>
@@ -295,9 +296,9 @@ namespace Inventories
             => throw new NotImplementedException();
 
         public IEnumerator<Item> GetEnumerator()
-            => throw new NotImplementedException();
+            => _items.Keys.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator()
-            => throw new NotImplementedException();
+            => _items.Keys.GetEnumerator();
     }
 }
