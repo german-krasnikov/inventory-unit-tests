@@ -141,6 +141,7 @@ namespace Inventories
         public bool AddItem(in Item item)
         {
             if (item == null) return false;
+            if (item.Size.x <= 0 || item.Size.y <= 0) throw new ArgumentOutOfRangeException(nameof(item.Size));
 
             if (FindFreePosition(item.Size, out var freePosition))
             {
