@@ -212,6 +212,8 @@ namespace Inventories
 
         public bool IsFree(in int posX, in int posY)
         {
+            if (!CheckGridRange(posX, posY)) return false;
+
             for (var x = 0; x < Width; x++)
             {
                 for (var y = 0; y < Height; y++)
