@@ -15,12 +15,18 @@ namespace Inventories
         public event Action<Item, Vector2Int> OnMoved;
         public event Action OnCleared;
 
-        public int Width => throw new NotImplementedException();
-        public int Height => throw new NotImplementedException();
-        public int Count => throw new NotImplementedException();
+        public int Width => _grid.GetLength(0);
+        public int Height => _grid.GetLength(1);
+        public int Count => _items.Count;
+
+        private readonly Item[,] _grid;
+        private readonly List<Item> _items;
 
         public Inventory(in int width, in int height)
-            => throw new NotImplementedException();
+        {
+            _grid = new Item[width, height];
+            _items = new List<Item>();
+        }
 
         public Inventory(
             in int width,
@@ -81,7 +87,7 @@ namespace Inventories
         /// </summary>
         public bool FindFreePosition(in Vector2Int size, out Vector2Int freePosition)
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Checks if a specified item exists
         /// </summary>
@@ -101,10 +107,23 @@ namespace Inventories
         /// Checks if a position is free
         /// </summary>
         public bool IsFree(in Vector2Int position)
-            => throw new NotImplementedException();
+            => IsFree(position.x, position.y);
 
-        public bool IsFree(in int x, in int y)
-            => throw new NotImplementedException();
+        public bool IsFree(in int posX, in int posY)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                for (int y = 0; y < Height; y++)
+                {
+                    var item = _grid[x, y];
+                    if (item == null) continue;
+                    if (x == posX && y == posY) return false;
+                    if (posX.IsInRange(x, x + item.Size.x) && posY.IsInRange(y, y + item.Size.y)) return false;
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Removes a specified item if exists
@@ -138,13 +157,13 @@ namespace Inventories
 
         public bool TryGetPositions(in Item item, out Vector2Int[] positions)
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Clears all inventory items
         /// </summary>
         public void Clear()
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Returns a count of items with a specified name
         /// </summary>
@@ -156,7 +175,7 @@ namespace Inventories
         /// </summary>
         public bool MoveItem(in Item item, in Vector2Int newPosition)
             => throw new NotImplementedException();
-        
+
         /// <summary>
         /// Reorganizes inventory space to make the free area uniform
         /// </summary>
