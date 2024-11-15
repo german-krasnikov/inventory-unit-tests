@@ -232,10 +232,15 @@ namespace Inventories
             {
                 item = GetItem(x, y);
             }
-            catch (NullReferenceException)
+            catch (Exception e)
             {
-                item = null;
-                return false;
+                if (e is IndexOutOfRangeException or NullReferenceException)
+                {
+                    item = null;
+                    return false;
+                }
+
+                throw;
             }
 
             return true;
