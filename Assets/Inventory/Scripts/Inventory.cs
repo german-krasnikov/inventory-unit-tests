@@ -169,7 +169,7 @@ namespace Inventories
                     var item = _grid[x, y];
                     if (item == null) continue;
                     if (x == posX && y == posY) return false;
-                    if (posX.IsInRange(x, x + item.Size.x) && posY.IsInRange(y, y + item.Size.y)) return false;
+                    if (posX.IsInRange(x, x + item.Size.x - 1) && posY.IsInRange(y, y + item.Size.y - 1)) return false;
                 }
             }
 
