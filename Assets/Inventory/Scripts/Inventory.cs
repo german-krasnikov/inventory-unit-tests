@@ -120,7 +120,9 @@ namespace Inventories
             if (posX + item.Size.x > Width || posY + item.Size.y > Height) return false;
 
             IterateByItemPositions(item, posX, posY, (x, y) => _grid[x, y] = item);
-            _items.Add(item, new Vector2Int(posX, posY));
+            var position = new Vector2Int(posX, posY);
+            _items.Add(item, position);
+            OnAdded?.Invoke(item, position);
             return true;
         }
 
@@ -240,7 +242,7 @@ namespace Inventories
 
             IterateByItemPositions(item, position.x, position.y, (x, y) => _grid[x, y] = null);
             _items.Remove(item);
-            OnRemoved(item, position);
+            OnRemoved.Invoke(item, position);
             return true;
         }
 
