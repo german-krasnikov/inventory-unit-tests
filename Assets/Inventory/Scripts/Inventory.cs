@@ -184,8 +184,9 @@ namespace Inventories
             if (!Contains(item)) return false;
 
             var position = _items[item];
-            _grid[position.y, position.y] = null;
+            _grid[position.x, position.y] = null;
             _items.Remove(item);
+            OnRemoved(item, position);
             return true;
         }
 
