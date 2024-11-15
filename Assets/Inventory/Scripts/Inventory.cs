@@ -158,6 +158,7 @@ namespace Inventories
         /// </summary>
         public bool FindFreePosition(Vector2Int size, out Vector2Int freePosition)
         {
+            CheckItemSize(size);
             if (size.x > Width || size.y > Height)
             {
                 freePosition = default;
@@ -310,7 +311,7 @@ namespace Inventories
         /// </summary>
         public Vector2Int[] GetPositions(in Item item)
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null) throw new NullReferenceException(nameof(item));
 
             var position = _items[item];
             var result = new List<Vector2Int>();
@@ -402,9 +403,11 @@ namespace Inventories
 
         private bool CheckGridRange(int x, int y) => x.IsInRange(0, Width - 1) && y.IsInRange(0, Height - 1);
 
-        private void CheckItemSize(Item item)
+        private void CheckItemSize(Item item) => CheckItemSize(item.Size);
+
+        private void CheckItemSize(Vector2Int size)
         {
-            if (item.Size.x <= 0 || item.Size.y <= 0) throw new ArgumentOutOfRangeException(nameof(item.Size));
+            if (size.x <= 0 || size.y <= 0) throw new ArgumentOutOfRangeException(nameof(size));
         }
     }
 }
