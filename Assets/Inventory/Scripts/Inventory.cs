@@ -211,6 +211,8 @@ namespace Inventories
 
         public Item GetItem(in int posX, in int posY)
         {
+            if (!posY.IsInRange(0, Height - 1) || !posX.IsInRange(0, Width - 1)) throw new IndexOutOfRangeException();
+
             foreach (var pair in _items)
             {
                 var item = pair.Key;
