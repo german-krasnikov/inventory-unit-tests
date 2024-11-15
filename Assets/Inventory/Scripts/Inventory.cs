@@ -91,7 +91,7 @@ namespace Inventories
 
         public bool CanAddItem(in Item item, in int posX, in int posY)
         {
-            if (item == null || Contains(item)) return false;
+            if (item == null || Contains(item) || !posY.IsInRange(0, Height - 1) || !posX.IsInRange(0, Width - 1)) return false;
 
             for (int x = posX; x < posX + item.Size.x; x++)
             {
