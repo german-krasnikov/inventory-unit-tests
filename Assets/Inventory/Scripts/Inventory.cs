@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 // ReSharper disable NotResolvedInText
@@ -392,10 +393,10 @@ namespace Inventories
         {
             var item1Size = item1.Size.x * item1.Size.y;
             var item2Size = item2.Size.x * item2.Size.y;
-            int result = item2Size.CompareTo(item1Size);
+            var result = item2Size.CompareTo(item1Size);
             if (result != 0) return result;
-            int maxSide1 = Math.Max(item1.Size.x, item1.Size.y);
-            int maxSide2 = Math.Max(item2.Size.x, item2.Size.y);
+            var maxSide1 = Math.Max(item1.Size.x, item1.Size.y);
+            var maxSide2 = Math.Max(item2.Size.x, item2.Size.y);
             result = maxSide2.CompareTo(maxSide1);
             if (result != 0) return result;
             return 0;
@@ -451,5 +452,7 @@ namespace Inventories
         {
             if (size.x <= 0 || size.y <= 0) throw new ArgumentOutOfRangeException(nameof(size));
         }
+        
+        public override string ToString() => _grid.ToString();
     }
 }
