@@ -397,7 +397,7 @@ namespace Inventories
             if (result != 0) return result;
             var maxSide1 = Math.Max(item1.Size.x, item1.Size.y);
             var maxSide2 = Math.Max(item2.Size.x, item2.Size.y);
-            result = maxSide2.CompareTo(maxSide1);
+            result = maxSide1.CompareTo(maxSide2);
             if (result != 0) return result;
             return 0;
         }
