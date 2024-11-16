@@ -350,7 +350,7 @@ namespace Inventories
         /// </summary>
         public bool MoveItem(Item item, in Vector2Int newPosition)
         {
-            if(item == null) throw new ArgumentNullException(nameof(item));
+            if (item == null) throw new ArgumentNullException(nameof(item));
             if (!Contains(item)) return false;
             var position = _items[item];
             IterateByItemPositions(item, position.x, position.y, (x, y) => _grid[x, y] = null);
@@ -376,8 +376,10 @@ namespace Inventories
         /// <summary>
         /// Copies inventory items to a specified matrix
         /// </summary>
-        public void CopyTo(in Item[,] matrix)
-            => throw new NotImplementedException();
+        public void CopyTo(Item[,] matrix)
+        {
+            IterateByGridPositions((x, y) => matrix[x, y] = _grid[x, y]);
+        }
 
         public IEnumerator<Item> GetEnumerator()
             => _items.Keys.GetEnumerator();
