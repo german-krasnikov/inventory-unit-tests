@@ -433,17 +433,6 @@ namespace Inventories
             }
         }
 
-        private void BreakableIterateByRangePositions(int posX, int posY, int width, int height, Func<int, int, bool> callback)
-        {
-            for (var x = posX; x < posX + width; x++)
-            {
-                for (var y = posY; y < posY + height; y++)
-                {
-                    if (!callback(x, y)) return;
-                }
-            }
-        }
-
         private bool CheckGridRange(int x, int y) => x.IsInRange(0, Width - 1) && y.IsInRange(0, Height - 1);
 
         private void CheckItemSize(Item item) => CheckItemSize(item.Size);
