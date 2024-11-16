@@ -371,7 +371,35 @@ namespace Inventories
         /// Reorganizes inventory space to make the free area uniform
         /// </summary>
         public void ReorganizeSpace()
-            => throw new NotImplementedException();
+        {
+            var sortedList = GetSortedList();
+            Clear();
+
+            foreach (var item in sortedList)
+            {
+                AddItem(item);
+            }
+        }
+
+        private List<Item> GetSortedList()
+        {
+            var items = _items.Keys.ToList();
+            items.Sort(Compare);
+            return items;
+        }
+
+        private int Compare(Item item1, Item item2)
+        {
+            var item1Size = item1.Size.x * item1.Size.y;
+            var item2Size = item2.Size.x * item2.Size.y;
+            int result = item2Size.CompareTo(item1Size);
+            if (result != 0) return result;
+            int maxSide1 = Math.Max(item1.Size.x, item1.Size.y);
+            int maxSide2 = Math.Max(item2.Size.x, item2.Size.y);
+            result = maxSide2.CompareTo(maxSide1);
+            if (result != 0) return result;
+            return 0;
+        }
 
         /// <summary>
         /// Copies inventory items to a specified matrix
