@@ -350,6 +350,7 @@ namespace Inventories
         /// </summary>
         public bool MoveItem(Item item, in Vector2Int newPosition)
         {
+            if(item == null) throw new ArgumentNullException(nameof(item));
             if (!Contains(item)) return false;
             var position = _items[item];
             IterateByItemPositions(item, position.x, position.y, (x, y) => _grid[x, y] = null);
