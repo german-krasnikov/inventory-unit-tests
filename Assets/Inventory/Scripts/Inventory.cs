@@ -274,14 +274,9 @@ namespace Inventories
         {
             if (!CheckGridRange(posX, posY)) throw new IndexOutOfRangeException();
 
-            foreach (var pair in _items)
-            {
-                var item = pair.Key;
-                var pos = pair.Value;
-                if (posX.IsInRange(pos.x, pos.x + item.Size.x) && posY.IsInRange(pos.y, pos.y + item.Size.y)) return item;
-            }
-
-            throw new NullReferenceException();
+            var item = _grid[posX, posY];
+            if (item == null) throw new NullReferenceException();
+            return item;
         }
 
         public bool TryGetItem(in Vector2Int position, out Item item)
