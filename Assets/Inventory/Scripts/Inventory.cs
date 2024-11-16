@@ -159,6 +159,7 @@ namespace Inventories
         public bool FindFreePosition(Vector2Int size, out Vector2Int freePosition)
         {
             CheckItemSize(size);
+
             if (size.x > Width || size.y > Height)
             {
                 freePosition = default;
@@ -352,8 +353,23 @@ namespace Inventories
         /// <summary>
         /// Moves a specified item to a target position if it exists
         /// </summary>
-        public bool MoveItem(in Item item, in Vector2Int newPosition)
-            => throw new NotImplementedException();
+        public bool MoveItem(Item item, in Vector2Int newPosition)
+        {
+            if (!Contains(item)) return false;
+            var position = _items[item];
+            IterateByItemPositions(item, position.x, position.y, (x, y) => _grid[x, y] = null);
+
+            if (!IsFreeSection(newPosition.x, newPosition.y, item.Size))
+            {
+                IterateByItemPositions(item, position.x, position.y, (x, y) => _grid[x, y] = item);
+                return false;
+            }
+
+            IterateByItemPositions(item, newPosition.x, newPosition.y, (x, y) => _grid[x, y] = item);
+            _items[item] = newPosition;
+            OnMoved.Invoke(item, newPosition);
+            return true;
+        }
 
         /// <summary>
         /// Reorganizes inventory space to make the free area uniform
